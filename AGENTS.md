@@ -47,7 +47,7 @@ This repository is the admission loop: plan checks, verdicts, and the assembly g
 
 Do not add a model, a retrieval corpus, or a memory store here.
 
-## Where the other six live
+## Where the other seven live
 
 | The work | Repository |
 | --- | --- |
@@ -58,6 +58,7 @@ Do not add a model, a retrieval corpus, or a memory store here.
 | Tool faces, skills, hooks, cookbooks | `drosera` |
 | Probes over those libraries | `trellis` |
 | The team workspace a person opens | `bloom` |
+| Family documentation, synced from every public repository | `docs` |
 
 ## Skills
 
