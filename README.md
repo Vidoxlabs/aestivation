@@ -47,8 +47,8 @@ Aestivation is one of five named projects that share one design law — ordinary
 | Name | Province |
 | :--- | :--- |
 | [`seed`](https://github.com/Vidoxlabs/seed) | The agent harness foundation: instructions to modules to tools, with the run model in between. |
-| `capillary` | Context retrieval and relations, provenance-first. |
-| `myosotis` | Governed memory: consent to keep, promise to forget. |
+| [`capillary`](https://github.com/Vidoxlabs/capillary) | Context retrieval and relations, provenance-first. |
+| [`myosotis`](https://github.com/Vidoxlabs/myosotis) | Governed memory: consent to keep, promise to forget. |
 | `aestivation` (this repo) | Plan proposal, deterministic validation, review verdicts, and the assembly gate. |
 | [`bloom`](https://github.com/Vidoxlabs/bloom) | The agent harness the family serves: an environment where agents run. |
 
