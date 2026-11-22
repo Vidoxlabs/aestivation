@@ -5,7 +5,7 @@ Label: `specified` (shape), `implemented` (rule pack in `src/plan.mjs`).
 ## Shape
 
 ```
-proposal { id, objective, steps[] }
+proposal { id, objective, steps[], digest }
 step     { stage, title }
 stage    one of: research, work, review, assemble, verify
 ```
@@ -38,8 +38,16 @@ All five are shape and order rules. None of them judges content.
 
 A validation result is data. The gate consumes it; a caller may not string-match a validation's prose, because prose changes and rules stay.
 
+## The plan digest
+
+`implemented` in `src/plan.mjs`. `planDigest(proposal)` is the SHA-256, in 64 lowercase hex, of the proposal's content as canonical JSON: `{ id, objective, steps }`, every step with all of its fields, object keys sorted, undefined members dropped, no whitespace. `planProposal` stores it as `digest`. Key order does not change the digest; any change to the id, the objective, a step's fields, or the step list does. A verdict names this digest to say which version of the plan it reviewed (see the verdict contract), and that is how "the proposal reviewed is the proposal assembled" is checked.
+
 ## Prohibitions
 
 - No silent step injection. The proposal reviewed is the proposal assembled; steps appearing after review are a new proposal.
 - No stage migration inside a plan object. A plan is frozen on creation.
 - No rule pack may approve on a reviewer's behalf, and no reviewer verdict may waive a rule.
+
+## Changes
+
+- `0.3.0` — `planDigest` and the proposal's `digest` field are new. Additive: validation and proposal construction are otherwise unchanged.

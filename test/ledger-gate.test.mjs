@@ -16,7 +16,7 @@ const valid = { ok: true, errors: [] };
 const approve = verdictRecord({ planId: 'plan-1', decision: 'approve', judge: 'reviewer-a' });
 
 test('held reasons are a closed, ordered set', () => {
-  assert.deepEqual(HELD_REASONS, ['plan-invalid', 'ledger-unsound', 'awaiting-verdict', 'revisions-requested']);
+  assert.deepEqual(HELD_REASONS, ['plan-invalid', 'ledger-unsound', 'awaiting-verdict', 'review-stale', 'revisions-requested']);
 });
 
 test('ledger soundness checks every record, not only its plan reference', () => {

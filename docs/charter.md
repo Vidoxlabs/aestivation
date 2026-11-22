@@ -13,7 +13,7 @@ The name is the doctrine. Aestivation is the arrangement of petals in the bud be
 3. **The ledger is append-only.** A verdict is a record of a moment in review. It is never edited. Re-review after revision is a new verdict appended to the plan's history.
 4. **Revise stops assembly.** When a plan's latest verdict is revise, the gate holds. Automatic assembly does not proceed on a maybe.
 5. **The loop never ratifies for the owner.** A verdict records review; a gate opening permits assembly. Neither is the owner's assent. Effects that exceed the plan's scope — publishing, deploying, deleting, spending — are gated effects, and they route the owner's gate in the harness, not the reviewer's pen.
-6. **Held states say why.** A gate that holds names the reason: plan-invalid, ledger-unsound, awaiting-verdict, revisions-requested. "No" without a reason teaches nothing.
+6. **Held states say why.** A gate that holds names the reason: plan-invalid, ledger-unsound, awaiting-verdict, review-stale, revisions-requested. "No" without a reason teaches nothing.
 
 ## Non-goals
 

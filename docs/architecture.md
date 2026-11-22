@@ -12,13 +12,14 @@ Four whorls, one gate.
                 yes/no          with reasons     plan-invalid
                                                  ledger-unsound
                                                  awaiting-verdict
+                                                 review-stale
                                                  revisions-requested
             └─────────────────────────────────────────────┘
 ```
 
 ## The proposal
 
-A plan is an objective plus ordered steps. Each step names a stage from a closed set — `research`, `work`, `review`, `assemble`, `verify` — and carries a title. The proposal is the unit of review: reviewers read it whole, and a revised plan is a new proposal, not an edit of the old one in place.
+A plan is an objective plus ordered steps. Each step names a stage from a closed set — `research`, `work`, `review`, `assemble`, `verify` — and carries a title. The proposal is the unit of review: reviewers read it whole, and a revised plan is a new proposal, not an edit of the old one in place. Each proposal carries the SHA-256 digest of its content, so a verdict can name exactly which version it reviewed.
 
 ## The rule pack
 
@@ -43,7 +44,8 @@ One composition, one answer. Given a validation result and a ledger, the gate an
 1. `plan-invalid` — the rule pack rejected it. Deterministic outranks judgment; an approval cannot rescue an invalid plan.
 2. `ledger-unsound` — the ledger holds a malformed record, or, when known plans are given, a reference to an unknown plan. Judgment counts only from a ledger the gate can trust.
 3. `awaiting-verdict` — no verdict exists for the plan. Unreviewed plans do not self-assemble.
-4. `revisions-requested` — the latest verdict is revise. The reasons say what to change; the plan comes back as a new proposal.
+4. `review-stale` — given the plan's digest, the latest verdict reviewed a different version or named none. The proposal reviewed is the proposal assembled.
+5. `revisions-requested` — the latest verdict is revise. The reasons say what to change; the plan comes back as a new proposal.
 
 Permitted means one thing: valid plan, approved by the latest verdict. Not good, not owner-ratified, not deployed — permitted to assemble, with the ledger showing exactly why.
 

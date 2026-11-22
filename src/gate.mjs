@@ -6,15 +6,18 @@ import { latestVerdict, ledgerSoundness } from './verdict.mjs';
 
 // Held reasons, in the order the gate checks them.
 export const HELD_REASONS = Object.freeze([
-  'plan-invalid', 'ledger-unsound', 'awaiting-verdict', 'revisions-requested',
+  'plan-invalid', 'ledger-unsound', 'awaiting-verdict', 'review-stale', 'revisions-requested',
 ]);
 
-export function assemblyGate({ validation, verdicts = [], planId, knownPlanIds } = {}) {
+export function assemblyGate({ validation, verdicts = [], planId, planDigest, knownPlanIds } = {}) {
   if (!validation || typeof validation.ok !== 'boolean') {
     throw new Error('assemblyGate requires a validation result with a boolean ok');
   }
   if (typeof planId !== 'string' || planId.length === 0) {
     throw new Error('assemblyGate requires a non-empty planId');
+  }
+  if (planDigest !== undefined && (typeof planDigest !== 'string' || !/^[0-9a-f]{64}$/.test(planDigest))) {
+    throw new Error('assemblyGate planDigest must be the 64-hex digest of the plan when given');
   }
   const known = knownPlanIds === undefined
     ? null
@@ -36,6 +39,9 @@ export function assemblyGate({ validation, verdicts = [], planId, knownPlanIds }
     held = 'ledger-unsound';
   } else if (verdict === null) {
     held = 'awaiting-verdict';
+  } else if (planDigest !== undefined && verdict.planDigest !== planDigest) {
+    // The latest review was of another version of this plan, or named none.
+    held = 'review-stale';
   } else if (verdict.decision === 'revise') {
     held = 'revisions-requested';
   }

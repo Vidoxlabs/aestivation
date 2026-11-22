@@ -11,9 +11,14 @@ export class VerdictError extends Error {
   }
 }
 
-function verdictIssues({ planId, decision, judge, reasons = [] } = {}) {
+const DIGEST_PATTERN = /^[0-9a-f]{64}$/;
+
+function verdictIssues({ planId, planDigest, decision, judge, reasons = [] } = {}) {
   const issues = [];
   if (typeof planId !== 'string' || planId.length === 0) issues.push('planId must be a non-empty string');
+  if (planDigest !== undefined && planDigest !== null && (typeof planDigest !== 'string' || !DIGEST_PATTERN.test(planDigest))) {
+    issues.push('planDigest must be the 64-hex digest of the reviewed plan when present');
+  }
   if (!DECISIONS.has(decision)) {
     issues.push(`decision must be one of ${[...DECISIONS].join(', ')} (got ${JSON.stringify(decision)})`);
   }
@@ -30,8 +35,8 @@ function verdictIssues({ planId, decision, judge, reasons = [] } = {}) {
 export function verdictRecord(input = {}) {
   const issues = verdictIssues(input);
   if (issues.length > 0) throw new VerdictError(issues);
-  const { planId, decision, judge, reasons = [] } = input;
-  return Object.freeze({ planId, decision, judge, reasons: Object.freeze([...reasons]) });
+  const { planId, planDigest = null, decision, judge, reasons = [] } = input;
+  return Object.freeze({ planId, planDigest, decision, judge, reasons: Object.freeze([...reasons]) });
 }
 
 // Ledger soundness: the ledger is a list, every entry is a well-formed verdict

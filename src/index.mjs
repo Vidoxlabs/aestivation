@@ -6,6 +6,7 @@ export {
   PlanError,
   validatePlan,
   planProposal,
+  planDigest,
 } from './plan.mjs';
 export {
   DECISIONS,
@@ -16,7 +17,7 @@ export {
 } from './verdict.mjs';
 export { assemblyGate, HELD_REASONS } from './gate.mjs';
 
-export const VERSION = '0.2.0';
+export const VERSION = '0.3.0';
 
 export function about() {
   const lines = [
@@ -29,7 +30,7 @@ export function about() {
     '  gate    one composition: permitted or held, with the reason named',
     '',
     'stages: research, work, review, assemble, verify',
-    'gate order: plan-invalid, ledger-unsound, awaiting-verdict, revisions-requested',
+    'gate order: plan-invalid, ledger-unsound, awaiting-verdict, review-stale, revisions-requested',
     'the loop never ratifies for the owner',
   ];
   return lines.join('\n');

@@ -1,6 +1,8 @@
 // Aestivation plan: proposals and the deterministic rule pack.
 // The rule pack judges shape and order — never content, never authority.
 
+import { createHash } from 'node:crypto';
+
 export const STAGE_KINDS = Object.freeze(
   new Set(['research', 'work', 'review', 'assemble', 'verify'])
 );
@@ -53,6 +55,29 @@ export function validatePlan(steps) {
   return { ok: issues.length === 0, errors: issues };
 }
 
+// Canonical JSON: object keys sorted, undefined members dropped, no whitespace.
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`;
+  if (value !== null && typeof value === 'object') {
+    const members = Object.keys(value)
+      .filter((key) => value[key] !== undefined)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`);
+    return `{${members.join(',')}}`;
+  }
+  return JSON.stringify(value);
+}
+
+// The SHA-256 of a proposal's content: its id, objective, and every field of
+// every step, as canonical JSON. A verdict names this digest to say exactly
+// which version of the plan it reviewed.
+export function planDigest({ id, objective, steps } = {}) {
+  if (typeof id !== 'string' || typeof objective !== 'string' || !Array.isArray(steps)) {
+    throw new PlanError(['planDigest needs a proposal with an id, an objective, and steps']);
+  }
+  return createHash('sha256').update(canonicalJson({ id, objective, steps }), 'utf8').digest('hex');
+}
+
 export function planProposal({ id, objective, steps } = {}) {
   const issues = [];
   if (typeof id !== 'string' || id.length === 0) issues.push('id must be a non-empty string');
@@ -61,9 +86,11 @@ export function planProposal({ id, objective, steps } = {}) {
   }
   issues.push(...validateSteps(steps));
   if (issues.length > 0) throw new PlanError(issues);
+  const frozenSteps = Object.freeze(steps.map((step) => Object.freeze({ ...step })));
   return Object.freeze({
     id,
     objective,
-    steps: Object.freeze(steps.map((step) => Object.freeze({ ...step }))),
+    steps: frozenSteps,
+    digest: planDigest({ id, objective, steps: frozenSteps }),
   });
 }
