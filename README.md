@@ -2,7 +2,7 @@
 
 Plan proposal, deterministic validation, review verdicts, and the assembly gate.
 
-Aestivation is the admission and review loop in the public bloom agent family. Before work opens, it happens here: a plan is proposed, a deterministic rule pack validates it, reviewers record approve or revise verdicts, and a gate holds automatic assembly until the plan is both valid and approved. A revision verdict stops assembly; the reasons say what to change; the next plan is a new proposal.
+Aestivation is the admission and review member of the bloom agent family. Before work opens, it happens here: a plan is proposed, a deterministic rule pack validates it, reviewers record approve or revise verdicts, and a gate holds automatic assembly until the plan is both valid and approved. A revision verdict stops assembly; the reasons say what to change; the next plan is a new proposal.
 
 ## Status
 
@@ -26,7 +26,7 @@ Requires Node >= 22.13. Zero runtime dependencies.
 
 ## The name
 
-Aestivation is the arrangement of petals in a bud before it opens. That is the entire doctrine: the work of arranging before the opening. Nothing assembles until the arrangement has been validated and reviewed — and when it opens, it opens because the gate said so for stated reasons.
+Aestivation is the arrangement of petals in a bud before it opens. That is the entire doctrine: the work of arranging before the opening. Nothing assembles until the arrangement has been validated and reviewed. When it opens, it opens because the gate said so for stated reasons.
 
 ## The rule pack
 
@@ -38,28 +38,29 @@ The baseline deterministic rules a plan must pass:
 4. When review and assemble are both present, review precedes the first assemble.
 5. When verify is present, it is the final step.
 
-Deterministic means deterministic: the same plan validates the same way every time, and no review can wave it through. Conversely, no rule pack can approve a plan on a reviewer's behalf either — judgment and rules are separate lanes that the gate composes.
+The same plan validates the same way every time, and no review can wave it through. The split runs both ways: no rule pack approves a plan on a reviewer's behalf. Judgment and rules are separate lanes; the gate composes them.
 
 ## The family
 
-Aestivation is one of five named projects that share one design law — ordinary botanical words for public products, mirroring five flower-named personas:
+The family follows one design law: ordinary botanical words for public products, mirroring five flower-named personas.
 
 | Name | Province |
 | :--- | :--- |
-| [`seed`](https://github.com/Vidoxlabs/seed) | The agent harness foundation: instructions to modules to tools, with the run model in between. |
-| [`capillary`](https://github.com/Vidoxlabs/capillary) | Context retrieval and relations, provenance-first. |
-| [`myosotis`](https://github.com/Vidoxlabs/myosotis) | Governed memory: consent to keep, promise to forget. |
-| `aestivation` (this repo) | Plan proposal, deterministic validation, review verdicts, and the assembly gate. |
-| [`drosera`](https://github.com/Vidoxlabs/drosera) | The tooling fabric: tool faces, skills, hooks, cookbooks. |
-| [`trellis`](https://github.com/Vidoxlabs/trellis) | The testing lattice: multi-point probes over the family. |
-| [`bloom`](https://github.com/Vidoxlabs/bloom) | The agent harness the family serves: an environment where agents run. |
+| [`seed`](https://github.com/Vidoxlabs/seed) | Harness foundation: runs, tools, providers |
+| [`capillary`](https://github.com/Vidoxlabs/capillary) | Context retrieval and relations, provenance-first |
+| [`myosotis`](https://github.com/Vidoxlabs/myosotis) | Memory with consent and structural forget |
+| `aestivation` (this repo) | Plans, verdicts, and the gate before assembly |
+| [`drosera`](https://github.com/Vidoxlabs/drosera) | Tool faces, skills, hooks, cookbooks |
+| [`trellis`](https://github.com/Vidoxlabs/trellis) | Multi-point testing with dated evidence |
+| [`bloom`](https://github.com/Vidoxlabs/bloom) | The team workspace harness |
 
 ## Documentation
 
-- `docs/charter.md` — mission, principles, non-goals.
-- `docs/architecture.md` — the bud and its four whorls.
-- `docs/contracts/` — the plan, verdict, and gate contracts.
-- `docs/interop.md` — how bloom runs the loop, and how seed carries its effects.
+- `AGENTS.md`: start here before editing. Stay in this repository's province.
+- `docs/charter.md`: mission, principles, non-goals.
+- `docs/architecture.md`: the bud and its four whorls.
+- `docs/contracts/`: the plan, verdict, and gate contracts.
+- `docs/interop.md`: how bloom runs the loop, and how seed carries its effects.
 
 ## Development
 
