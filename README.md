@@ -51,6 +51,7 @@ Aestivation is one of five named projects that share one design law — ordinary
 | [`myosotis`](https://github.com/Vidoxlabs/myosotis) | Governed memory: consent to keep, promise to forget. |
 | `aestivation` (this repo) | Plan proposal, deterministic validation, review verdicts, and the assembly gate. |
 | [`drosera`](https://github.com/Vidoxlabs/drosera) | The tooling fabric: tool faces, skills, hooks, cookbooks. |
+| [`trellis`](https://github.com/Vidoxlabs/trellis) | The testing lattice: multi-point probes over the family. |
 | [`bloom`](https://github.com/Vidoxlabs/bloom) | The agent harness the family serves: an environment where agents run. |
 
 ## Documentation
