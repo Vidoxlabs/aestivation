@@ -7,6 +7,11 @@ export const EVIDENCE_NEEDS = Object.freeze(
   new Set(['project-knowledge', 'live-state', 'durable-memory', 'none'])
 );
 
+const EVIDENCE_POLICY = Object.freeze({
+  missingSource: 'state-unavailable',
+  personalRecall: 'admitted-memory-only',
+});
+
 // Fields that would carry authority. An assessment that arrives with any of them is refused.
 const AUTHORITY_FIELDS = Object.freeze([
   'tools', 'allowedTools', 'memoryWrites', 'grants', 'scopes', 'actions',
@@ -42,6 +47,7 @@ export function intentAssessment(input = {}) {
     needs: Object.freeze([...new Set(needs)]),
     confidence,
     authority: 'advisory',
+    evidencePolicy: EVIDENCE_POLICY,
   });
   ASSESSMENTS.add(record);
   return record;
@@ -53,17 +59,19 @@ export function isIntentAssessment(value) {
 }
 
 function stringList(value, name) {
-  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string' || item.length === 0)) {
+  const list = Array.isArray(value) ? [...value] : null;
+  if (list === null || list.some((item) => typeof item !== 'string' || item.length === 0)) {
     throw new IntentError([`${name} must be a list of non-empty strings`]);
   }
-  return Object.freeze([...value]);
+  return Object.freeze(list);
 }
 
 /**
  * Compose an admission with an intent assessment. `admission` is
  * `{ allowedTools, memoryWrites }`, decided elsewhere. The result carries the same two
  * lists, copied and frozen, plus the assessment and `memoryRecallAdvised` when the
- * assessment names `durable-memory`. Recall is advice to read; it is never a write.
+ * assessment names `durable-memory`. Optional `availableSources` and `admittedMemory`
+ * lists describe evidence the caller already admitted. The latter holds memory references.
  * The input admission is not mutated. A value that is not an assessment record is
  * refused, so a forged object cannot smuggle a tool in.
  */
@@ -74,10 +82,24 @@ export function admitWithIntent(admission, assessment) {
   }
   const allowedTools = stringList(admission.allowedTools ?? [], 'allowedTools');
   const memoryWrites = stringList(admission.memoryWrites ?? [], 'memoryWrites');
+  const memoryRecallAdvised = assessment.needs.includes('durable-memory');
+  const availableSources = stringList(admission.availableSources ?? [], 'availableSources');
+  const admittedMemory = stringList(memoryRecallAdvised ? admission.admittedMemory ?? [] : [], 'admittedMemory');
+  const missingSources = Object.freeze(assessment.needs.filter((need) => {
+    if (need === 'none') return false;
+    if (need === 'durable-memory') return admittedMemory.length === 0;
+    return !availableSources.includes(need);
+  }));
+  const evidence = Object.freeze({
+    admittedMemory,
+    missingSources,
+    statement: missingSources.length ? `Required evidence is missing for ${missingSources.join(', ')}.` : null,
+  });
   return Object.freeze({
     allowedTools,
     memoryWrites,
     intent: assessment,
-    memoryRecallAdvised: assessment.needs.includes('durable-memory'),
+    memoryRecallAdvised,
+    evidence,
   });
 }

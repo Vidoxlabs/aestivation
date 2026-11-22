@@ -22,8 +22,8 @@ Requires Node >= 22.13. Zero runtime dependencies.
 | :--- | :--- | :--- |
 | `plan.mjs` | Plan proposals: objective plus ordered steps, the SHA-256 digest of each proposal's content, and the deterministic rule pack that validates stages, titles, and order. | `implemented` |
 | `verdict.mjs` | Verdict records (approve or revise) that may name the plan digest they reviewed, the append-only ledger, and the soundness check over every record. | `implemented` |
-| `intent.mjs` | Read-only intent assessments that name evidence needs and grant nothing; composing one with an admission returns the same tool and memory-write lists. | `implemented` |
-| `correction.mjs` | Corrections after a revise verdict: a new frozen proposal with a new digest, linked to the reviewed digest, refused when the judge would apply it. | `implemented` |
+| `intent.mjs` | Read-only intent assessments that name missing sources and ground personal recall in admitted memory references. Tool and memory-write lists stay under caller admission. | `implemented` |
+| `correction.mjs` | Corrections after an exact-digest revise verdict, with new frozen proposals, a two-replan limit per in-process lineage, and a check that refuses superseded results. The judge cannot apply the patch. | `implemented` |
 | `gate.mjs` | The assembly gate: one function that checks the ledger, holds a review of a different plan version as stale, and composes validation and verdicts into permitted or held, with the reason. | `implemented` |
 
 ## The name

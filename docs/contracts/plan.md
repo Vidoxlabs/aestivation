@@ -45,7 +45,7 @@ A validation result is data. The gate consumes it; a caller may not string-match
 ## Intent assessment
 
 `implemented` in `src/intent.mjs`. An intent assessment is advice about a request:
-`{ label, needs, confidence, authority: 'advisory' }`, frozen. `needs` lists evidence
+`{ label, needs, confidence, authority: 'advisory', evidencePolicy }`, frozen. `needs` lists evidence
 needs from `project-knowledge`, `live-state`, `durable-memory`, and `none`.
 
 1. **It grants nothing.** An input carrying `tools`, `allowedTools`, `memoryWrites`,
@@ -56,6 +56,15 @@ needs from `project-knowledge`, `live-state`, `durable-memory`, and `none`.
    write.
 3. **Only a real record composes.** A look-alike object, or a copy of a record, is
    refused, so a forged assessment cannot add a tool.
+4. **Missing evidence is named.** `evidencePolicy.missingSource` is `state-unavailable`.
+   The caller can supply `availableSources` with evidence types it verified. Composition
+   returns a frozen `evidence` record with `missingSources` and a `statement` naming
+   each gap. The statement is `null` when all required evidence is available.
+5. **Personal recall uses admitted memory.** `evidencePolicy.personalRecall` is
+   `admitted-memory-only`. A `durable-memory` need is met only by nonempty
+   `admission.admittedMemory`, a list of references already admitted by the caller.
+   The evidence record copies those references for a recall need. Conversation history,
+   an assessment's input fields and the generic source list cannot satisfy that need.
 
 ## Corrections
 
@@ -73,6 +82,15 @@ objective?, steps? })` answers a revise verdict:
    verdict's judge, or no author, is refused with `reviewer-cannot-apply`.
 4. An approval of the previous digest does not open the gate for the correction. The
    gate holds it as `review-stale` until the new digest is reviewed.
+5. Each parent proposal can spend two successful replans in its in-process lineage.
+   `correctPlan` retires the old digest when it returns the next proposal. A correction
+   from a retired proposal or back to a retired digest is refused with `order-superseded`.
+   The third replan is refused with `replan-exhausted`. Refusals spend no replan.
+6. Before consuming a result, call `assertCurrentPlanResult(proposal, { planId,
+   planDigest })` with the proposal instance held by the run. The check refuses retired
+   digests with `order-superseded` and other mismatches with `result-mismatch`. Retain
+   the returned proposal for the next review or result check. A reconstructed proposal
+   starts a separate in-memory lineage.
 
 ## Prohibitions
 

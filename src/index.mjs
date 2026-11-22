@@ -23,7 +23,7 @@ export {
   isIntentAssessment,
   admitWithIntent,
 } from './intent.mjs';
-export { CORRECTION_REFUSALS, CorrectionError, correctPlan } from './correction.mjs';
+export { CORRECTION_REFUSALS, CorrectionError, correctPlan, assertCurrentPlanResult } from './correction.mjs';
 
 export const VERSION = '0.4.0';
 
@@ -36,8 +36,8 @@ export function about() {
     '  plan    proposals and the deterministic rule pack',
     '  verdict recorded review on an append-only ledger',
     '  gate    one composition: permitted or held, with the reason named',
-    '  intent  read-only assessment: names evidence needs, grants no tool or memory write',
-    '  correction  a revise answered by a new digest; the judge does not apply it',
+    '  intent  read-only assessment with missing-source reporting and admitted recall',
+    '  correction  digest-bound revisions with a two-replan budget and stale-result refusal',
     '',
     'stages: research, work, review, assemble, verify',
     'gate order: plan-invalid, ledger-unsound, awaiting-verdict, review-stale, revisions-requested',

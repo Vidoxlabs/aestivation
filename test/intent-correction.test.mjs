@@ -13,6 +13,7 @@ import {
   planProposal,
   verdictRecord,
   correctPlan,
+  assertCurrentPlanResult,
   CorrectionError,
   CORRECTION_REFUSALS,
   assemblyGate,
@@ -54,6 +55,42 @@ test('a look-alike assessment cannot smuggle authority into an admission', () =>
   assert.equal(isIntentAssessment(forged), false);
   assert.throws(() => admitWithIntent({ allowedTools: [] }, forged), IntentError);
   assert.throws(() => admitWithIntent({ allowedTools: [] }, { ...intentAssessment({ label: 'x' }) }), IntentError);
+});
+
+test('read-only grounding names each required source that is missing', () => {
+  const assessment = intentAssessment({ label: 'verify', needs: ['live-state', 'project-knowledge'] });
+  const admission = { availableSources: ['live-state'], allowedTools: [], memoryWrites: [] };
+  const result = admitWithIntent(admission, assessment);
+  assert.deepEqual(assessment.evidencePolicy, { missingSource: 'state-unavailable', personalRecall: 'admitted-memory-only' });
+  assert.ok(Object.isFrozen(assessment.evidencePolicy));
+  assert.deepEqual(result.evidence.missingSources, ['project-knowledge']);
+  assert.match(result.evidence.statement, /project-knowledge/);
+  assert.deepEqual(result.allowedTools, []);
+  assert.deepEqual(result.memoryWrites, []);
+  const withSource = admitWithIntent({ availableSources: ['live-state', 'project-knowledge'] }, assessment);
+  assert.deepEqual(withSource.evidence.missingSources, []);
+  assert.equal(withSource.evidence.statement, null);
+});
+
+test('personal recall uses only references admitted by the caller', () => {
+  const assessment = intentAssessment({ label: 'recall', needs: ['durable-memory'], admittedMemory: ['model-suggestion'] });
+  const admission = { availableSources: ['durable-memory'], history: ['past message'], allowedTools: ['read'], memoryWrites: [] };
+  const unavailable = admitWithIntent(admission, assessment);
+  assert.equal(unavailable.memoryRecallAdvised, true);
+  assert.deepEqual(unavailable.evidence.admittedMemory, []);
+  assert.deepEqual(unavailable.evidence.missingSources, ['durable-memory']);
+  assert.match(unavailable.evidence.statement, /durable-memory/);
+  assert.deepEqual(unavailable.allowedTools, ['read']);
+  assert.deepEqual(unavailable.memoryWrites, []);
+
+  const references = ['memory-1'];
+  const composed = admitWithIntent({ ...admission, admittedMemory: references }, assessment);
+  references.push('memory-2');
+  assert.deepEqual(composed.evidence.admittedMemory, ['memory-1']);
+  assert.deepEqual(composed.evidence.missingSources, []);
+  assert.ok(Object.isFrozen(composed.evidence));
+  assert.ok(Object.isFrozen(composed.evidence.admittedMemory));
+  assert.deepEqual(admitWithIntent({ admittedMemory: references }, intentAssessment({ label: 'greeting', needs: ['none'] })).evidence.admittedMemory, []);
 });
 
 const plan = () => planProposal({
@@ -127,5 +164,32 @@ test('a correction needs a revise of this exact version, and must change the pla
   const noDigest = verdictRecord({ planId: 'plan-1', decision: 'revise', judge: 'r', reasons: ['x'] });
   assert.equal(code({ previous, verdict: noDigest, author: 'implementer-b', steps: correctedSteps }), 'review-mismatch');
   assert.equal(code({ previous, verdict: revise(previous), author: 'implementer-b' }), 'correction-unchanged');
-  assert.deepEqual([...CORRECTION_REFUSALS], ['correction-not-needed', 'review-mismatch', 'reviewer-cannot-apply', 'correction-unchanged']);
+  assert.deepEqual([...CORRECTION_REFUSALS], [
+    'correction-not-needed', 'review-mismatch', 'reviewer-cannot-apply', 'correction-unchanged',
+    'order-superseded', 'replan-exhausted', 'result-mismatch',
+  ]);
+});
+
+const replan = (previous, objective) => correctPlan({ previous, verdict: revise(previous), author: 'implementer-b', objective }).proposal;
+const resultFor = proposal => ({ planId: proposal.id, planDigest: proposal.digest });
+
+test('superseded proposals refuse late results and further corrections', () => {
+  const previous = plan();
+  const changed = replan(previous, 'Ship the reviewed guide.');
+  assert.throws(() => replan(previous, changed.objective), { code: 'order-superseded' });
+  assert.throws(() => assertCurrentPlanResult(changed, resultFor(previous)), { code: 'order-superseded' });
+  assert.throws(() => assertCurrentPlanResult(previous, resultFor(previous)), { code: 'order-superseded' });
+  assert.throws(() => assertCurrentPlanResult(changed, { ...resultFor(changed), planId: 'different-plan' }), { code: 'result-mismatch' });
+  assert.doesNotThrow(() => assertCurrentPlanResult(changed, resultFor(changed)));
+});
+
+test('a parent plan spends at most two replans and cannot restore a retired digest', () => {
+  const previous = plan();
+  const first = replan(previous, 'Ship the reviewed guide.');
+  assert.throws(() => replan(first, previous.objective), { code: 'order-superseded' });
+  assert.throws(() => replan(first, first.objective), { code: 'correction-unchanged' });
+  const second = replan(first, 'Ship the verified guide.');
+  assert.throws(() => replan(second, 'Ship a third revision.'), { code: 'replan-exhausted' });
+  assert.doesNotThrow(() => assertCurrentPlanResult(second, resultFor(second)));
+  assert.doesNotThrow(() => replan(plan(), 'Start a separate run with the same plan ID.'));
 });

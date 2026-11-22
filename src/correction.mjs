@@ -8,13 +8,33 @@ import { verdictRecord } from './verdict.mjs';
 
 export const CORRECTION_REFUSALS = Object.freeze([
   'correction-not-needed', 'review-mismatch', 'reviewer-cannot-apply', 'correction-unchanged',
+  'order-superseded', 'replan-exhausted', 'result-mismatch',
 ]);
+
+const MAX_REPLANS = 2;
+// Each proposal instance in a run refers to the same correction history.
+const LINEAGES = new WeakMap();
 
 export class CorrectionError extends Error {
   constructor(code, message) {
     super(message);
     this.name = 'CorrectionError';
     this.code = code;
+  }
+}
+
+/** Check a result against the proposal held by the run before consuming it. */
+export function assertCurrentPlanResult(proposal, result) {
+  const { planId, planDigest } = result ?? {};
+  if (typeof proposal?.id !== 'string' || typeof proposal.digest !== 'string' || planId !== proposal.id) {
+    throw new CorrectionError('result-mismatch', 'the result must name the active plan and its digest');
+  }
+  const lineage = LINEAGES.get(proposal);
+  if (lineage && (lineage.activeDigest !== proposal.digest || lineage.retiredDigests.has(planDigest))) {
+    throw new CorrectionError('order-superseded', 'a superseded proposal cannot accept results');
+  }
+  if (planDigest !== proposal.digest) {
+    throw new CorrectionError('result-mismatch', 'the result must name the active plan and its digest');
   }
 }
 
@@ -53,8 +73,16 @@ export function correctPlan({ previous, verdict, author, objective, steps } = {}
     objective: objective ?? previous.objective,
     steps: steps ?? previous.steps,
   });
+  assertCurrentPlanResult(previous, review);
+  const lineage = LINEAGES.get(previous) ?? { activeDigest: previous.digest, retiredDigests: new Set() };
+  if (lineage.retiredDigests.size >= MAX_REPLANS) {
+    throw new CorrectionError('replan-exhausted', 'the parent plan has spent its two replans');
+  }
   if (proposal.digest === previous.digest) {
     throw new CorrectionError('correction-unchanged', 'a correction must change the plan');
+  }
+  if (lineage.retiredDigests.has(proposal.digest)) {
+    throw new CorrectionError('order-superseded', 'a correction cannot restore a superseded digest');
   }
   const correction = Object.freeze({
     planId: previous.id,
@@ -64,5 +92,9 @@ export function correctPlan({ previous, verdict, author, objective, steps } = {}
     author,
     reasons: review.reasons,
   });
+  lineage.retiredDigests.add(previous.digest);
+  lineage.activeDigest = proposal.digest;
+  LINEAGES.set(previous, lineage);
+  LINEAGES.set(proposal, lineage);
   return Object.freeze({ proposal, correction });
 }
