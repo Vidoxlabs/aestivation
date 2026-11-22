@@ -1,6 +1,6 @@
 {
   "name": "@vidoxlabs/aestivation",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Plan proposal, deterministic validation, review verdicts, and the assembly gate. The admission and review loop in the bloom agent family.",
   "type": "module",
   "main": "src/index.mjs",

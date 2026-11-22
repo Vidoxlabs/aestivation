@@ -10,6 +10,7 @@ Four whorls, one gate.
    {objective,                                 held?        (or held, with reason)
     steps[]}    deterministic   judgment,        reason:
                 yes/no          with reasons     plan-invalid
+                                                 ledger-unsound
                                                  awaiting-verdict
                                                  revisions-requested
             └─────────────────────────────────────────────┘
@@ -40,8 +41,9 @@ Review is recorded, not remembered. Each verdict names its plan, carries a decis
 One composition, one answer. Given a validation result and a ledger, the gate answers: is automatic assembly of this plan permitted? Held reasons, in order:
 
 1. `plan-invalid` — the rule pack rejected it. Deterministic outranks judgment; an approval cannot rescue an invalid plan.
-2. `awaiting-verdict` — no verdict exists for the plan. Unreviewed plans do not self-assemble.
-3. `revisions-requested` — the latest verdict is revise. The reasons say what to change; the plan comes back as a new proposal.
+2. `ledger-unsound` — the ledger holds a malformed record, or, when known plans are given, a reference to an unknown plan. Judgment counts only from a ledger the gate can trust.
+3. `awaiting-verdict` — no verdict exists for the plan. Unreviewed plans do not self-assemble.
+4. `revisions-requested` — the latest verdict is revise. The reasons say what to change; the plan comes back as a new proposal.
 
 Permitted means one thing: valid plan, approved by the latest verdict. Not good, not owner-ratified, not deployed — permitted to assemble, with the ledger showing exactly why.
 

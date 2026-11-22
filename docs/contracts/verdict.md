@@ -24,7 +24,9 @@ decision  one of: approve, revise
 isSoundVerdictLedger(verdicts, knownPlanIds) → { ok, errors[] }
 ```
 
-A ledger is sound when every verdict is a well-formed record and every `planId` references a known plan. An unsound ledger is refused by the gate — the gate does not grade verdicts it cannot trust to reference real plans.
+A ledger is sound when it is a list, every verdict is a well-formed record by rules 1 through 3 (the same checks `verdictRecord` applies), and every `planId` references a known plan. Errors carry the verdict's index. An unsound ledger is refused by the gate with held reason `ledger-unsound` — the gate does not grade verdicts it cannot trust.
+
+`implemented` in `src/verdict.mjs` and `src/gate.mjs` as of `0.2.0`; before it, soundness checked only plan references and the gate did not check it at all.
 
 ## Prohibitions
 

@@ -14,9 +14,9 @@ export {
   isSoundVerdictLedger,
   latestVerdict,
 } from './verdict.mjs';
-export { assemblyGate } from './gate.mjs';
+export { assemblyGate, HELD_REASONS } from './gate.mjs';
 
-export const VERSION = '0.1.0';
+export const VERSION = '0.2.0';
 
 export function about() {
   const lines = [
@@ -29,7 +29,7 @@ export function about() {
     '  gate    one composition: permitted or held, with the reason named',
     '',
     'stages: research, work, review, assemble, verify',
-    'gate order: plan-invalid, awaiting-verdict, revisions-requested',
+    'gate order: plan-invalid, ledger-unsound, awaiting-verdict, revisions-requested',
     'the loop never ratifies for the owner',
   ];
   return lines.join('\n');

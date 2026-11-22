@@ -6,7 +6,7 @@ Aestivation is the admission and review loop in the public bloom agent family. B
 
 ## Status
 
-Version 0.1.0. Contracts and modules only; nothing shipped runtime-wise. The plan rule pack, the verdict ledger, and the assembly gate are `implemented` as a tested reference library. A durable ledger, live reviewers, and any service shape are `specified` or `planned`, not built.
+Version 0.2.0. Contracts and modules only; nothing shipped runtime-wise. The plan rule pack, the verdict ledger, and the assembly gate are `implemented` as a tested reference library. A durable ledger, live reviewers, and any service shape are `specified` or `planned`, not built.
 
 ## Install
 
@@ -21,8 +21,8 @@ Requires Node >= 22.13. Zero runtime dependencies.
 | Module | What it holds | Label |
 | :--- | :--- | :--- |
 | `plan.mjs` | Plan proposals: objective plus ordered steps, and the deterministic rule pack that validates stages, titles, and order. | `implemented` |
-| `verdict.mjs` | Verdict records (approve or revise), the append-only ledger, and the soundness check. | `implemented` |
-| `gate.mjs` | The assembly gate: one function that composes validation and verdicts into permitted or held, with the reason. | `implemented` |
+| `verdict.mjs` | Verdict records (approve or revise), the append-only ledger, and the soundness check over every record. | `implemented` |
+| `gate.mjs` | The assembly gate: one function that checks the ledger and composes validation and verdicts into permitted or held, with the reason. | `implemented` |
 
 ## The name
 

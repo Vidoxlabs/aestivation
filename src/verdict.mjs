@@ -11,7 +11,7 @@ export class VerdictError extends Error {
   }
 }
 
-export function verdictRecord({ planId, decision, judge, reasons = [] } = {}) {
+function verdictIssues({ planId, decision, judge, reasons = [] } = {}) {
   const issues = [];
   if (typeof planId !== 'string' || planId.length === 0) issues.push('planId must be a non-empty string');
   if (!DECISIONS.has(decision)) {
@@ -24,19 +24,38 @@ export function verdictRecord({ planId, decision, judge, reasons = [] } = {}) {
   if (decision === 'revise' && Array.isArray(reasons) && reasons.length === 0) {
     issues.push('a revise verdict requires at least one reason');
   }
+  return issues;
+}
+
+export function verdictRecord(input = {}) {
+  const issues = verdictIssues(input);
   if (issues.length > 0) throw new VerdictError(issues);
+  const { planId, decision, judge, reasons = [] } = input;
   return Object.freeze({ planId, decision, judge, reasons: Object.freeze([...reasons]) });
 }
 
-export function isSoundVerdictLedger(verdicts, knownPlanIds) {
-  const known = knownPlanIds instanceof Set ? knownPlanIds : new Set(knownPlanIds);
+// Ledger soundness: the ledger is a list, every entry is a well-formed verdict
+// record, and, when known plans are given, every planId references one.
+// Internal: the gate calls it with known = null when it was given no plan list.
+export function ledgerSoundness(verdicts, known) {
+  if (!Array.isArray(verdicts)) return { ok: false, errors: ['the verdict ledger must be a list'] };
   const errors = [];
   verdicts.forEach((verdict, index) => {
-    if (!known.has(verdict.planId)) {
+    if (verdict === null || typeof verdict !== 'object') {
+      errors.push(`verdict ${index}: must be a verdict record`);
+      return;
+    }
+    for (const issue of verdictIssues(verdict)) errors.push(`verdict ${index}: ${issue}`);
+    if (known !== null && !known.has(verdict.planId)) {
       errors.push(`verdict ${index} references unknown plan ${JSON.stringify(verdict.planId)}`);
     }
   });
   return { ok: errors.length === 0, errors };
+}
+
+export function isSoundVerdictLedger(verdicts, knownPlanIds) {
+  const known = knownPlanIds instanceof Set ? knownPlanIds : new Set(knownPlanIds);
+  return ledgerSoundness(verdicts, known);
 }
 
 export function latestVerdict(verdicts, planId) {
