@@ -91,6 +91,11 @@ objective?, steps? })` answers a revise verdict:
    digests with `order-superseded` and other mismatches with `result-mismatch`. Retain
    the returned proposal for the next review or result check. A reconstructed proposal
    starts a separate in-memory lineage.
+7. The caller declares expansion with `scopeExpanding`, `expandWorkspace`,
+   `expandPaths`, or `newCriterionGrant`. Both flags default to `false` and both
+   scope values default to `null`. A true flag or a non-null scope value throws
+   `ScopeExpansionError` with code `authority-required` before any change to the
+   lineage or budget. The previous proposal remains current.
 
 ## Prohibitions
 
@@ -99,6 +104,10 @@ objective?, steps? })` answers a revise verdict:
 - No rule pack may approve on a reviewer's behalf, and no reviewer verdict may waive a rule.
 
 ## Changes
+
+- `0.5.0` — `correctPlan` accepts optional scope fields and refuses requested
+  expansion. `ScopeExpansionError` extends `CorrectionError`. Calls within the
+  existing scope keep the original correction contract.
 
 - `0.4.0` — intent assessments and corrections are new. Additive: no existing export
   changed.

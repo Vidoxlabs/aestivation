@@ -23,6 +23,13 @@ export class CorrectionError extends Error {
   }
 }
 
+export class ScopeExpansionError extends CorrectionError {
+  constructor() {
+    super('authority-required', 'a correction that expands scope requires separate authority');
+    this.name = 'ScopeExpansionError';
+  }
+}
+
 /** Check a result against the proposal held by the run before consuming it. */
 export function assertCurrentPlanResult(proposal, result) {
   const { planId, planDigest } = result ?? {};
@@ -45,13 +52,17 @@ export function assertCurrentPlanResult(proposal, result) {
  * - `verdict` is the review: it must be a `revise` of `previous.id` at `previous.digest`.
  * - `author` applies the correction and may not be the verdict's judge.
  * - `objective` and `steps` default to the previous ones; at least one must change.
+ * - A declared scope expansion throws ScopeExpansionError before minting a new proposal.
  *
  * Returns `{ proposal, correction }`. `proposal` is a new frozen proposal with the same
  * id and a new digest. `correction` records `{ planId, previousDigest, digest,
- * reviewedBy, author, reasons }`. Refusals throw CorrectionError with a code from
- * CORRECTION_REFUSALS; plan shape errors throw PlanError.
+ * reviewedBy, author, reasons }`. Review and lineage refusals use CORRECTION_REFUSALS.
+ * Plan shape errors throw PlanError.
  */
-export function correctPlan({ previous, verdict, author, objective, steps } = {}) {
+export function correctPlan({
+  previous, verdict, author, objective, steps,
+  scopeExpanding = false, expandWorkspace = null, expandPaths = null, newCriterionGrant = false,
+} = {}) {
   if (!previous || typeof previous !== 'object' || typeof previous.digest !== 'string') {
     throw new CorrectionError('review-mismatch', 'a correction needs the reviewed proposal');
   }
@@ -67,6 +78,9 @@ export function correctPlan({ previous, verdict, author, objective, steps } = {}
   }
   if (author === review.judge) {
     throw new CorrectionError('reviewer-cannot-apply', 'the judge who asked for the revision cannot apply it');
+  }
+  if (scopeExpanding || expandWorkspace !== null || expandPaths !== null || newCriterionGrant) {
+    throw new ScopeExpansionError();
   }
   const proposal = planProposal({
     id: previous.id,
