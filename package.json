@@ -1,6 +1,6 @@
 {
   "name": "@vidoxlabs/aestivation",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Admission and review for agent work: plan validation, verdicts, the assembly gate.",
   "type": "module",
   "main": "src/index.mjs",

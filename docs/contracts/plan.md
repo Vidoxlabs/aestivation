@@ -42,6 +42,38 @@ A validation result is data. The gate consumes it; a caller may not string-match
 
 `implemented` in `src/plan.mjs`. `planDigest(proposal)` is the SHA-256, in 64 lowercase hex, of the proposal's content as canonical JSON: `{ id, objective, steps }`, every step with all of its fields, object keys sorted, undefined members dropped, no whitespace. `planProposal` stores it as `digest`. Key order does not change the digest; any change to the id, the objective, a step's fields, or the step list does. A verdict names this digest to say which version of the plan it reviewed (see the verdict contract), and that is how "the proposal reviewed is the proposal assembled" is checked.
 
+## Intent assessment
+
+`implemented` in `src/intent.mjs`. An intent assessment is advice about a request:
+`{ label, needs, confidence, authority: 'advisory' }`, frozen. `needs` lists evidence
+needs from `project-knowledge`, `live-state`, `durable-memory`, and `none`.
+
+1. **It grants nothing.** An input carrying `tools`, `allowedTools`, `memoryWrites`,
+   `grants`, `scopes`, or `actions` is refused.
+2. **It is read-only.** `admitWithIntent(admission, assessment)` returns the admission's
+   `allowedTools` and `memoryWrites`, copied and frozen, unchanged. The input is not
+   mutated. A `durable-memory` need sets `memoryRecallAdvised`: advice to read, never a
+   write.
+3. **Only a real record composes.** A look-alike object, or a copy of a record, is
+   refused, so a forged assessment cannot add a tool.
+
+## Corrections
+
+`implemented` in `src/correction.mjs`. `correctPlan({ previous, verdict, author,
+objective?, steps? })` answers a revise verdict:
+
+1. The verdict must be a `revise` of `previous.id` at `previous.digest`. An approval is
+   refused with `correction-not-needed`; a review of another version, or of no named
+   version, with `review-mismatch`.
+2. The previous proposal is not edited. The correction is a new frozen proposal with the
+   same id and a new digest, and a record `{ planId, previousDigest, digest, reviewedBy,
+   author, reasons }`. A correction that leaves the digest unchanged is refused with
+   `correction-unchanged`.
+3. The judge who asked for the revision cannot apply it: an `author` equal to the
+   verdict's judge, or no author, is refused with `reviewer-cannot-apply`.
+4. An approval of the previous digest does not open the gate for the correction. The
+   gate holds it as `review-stale` until the new digest is reviewed.
+
 ## Prohibitions
 
 - No silent step injection. The proposal reviewed is the proposal assembled; steps appearing after review are a new proposal.
@@ -49,5 +81,8 @@ A validation result is data. The gate consumes it; a caller may not string-match
 - No rule pack may approve on a reviewer's behalf, and no reviewer verdict may waive a rule.
 
 ## Changes
+
+- `0.4.0` — intent assessments and corrections are new. Additive: no existing export
+  changed.
 
 - `0.3.0` — `planDigest` and the proposal's `digest` field are new. Additive: validation and proposal construction are otherwise unchanged.
