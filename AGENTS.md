@@ -40,3 +40,46 @@ This is a public repository. No hostnames, addresses, ports, cluster names, cont
 - `npm test` must stay green. A claim of `implemented` requires a passing test named for it.
 - Docs change with code or they do not change at all. There is no "docs later."
 - Every rule in the rule pack must be visible in a test. If it cannot be tested, it is a wish, and it must be labeled `planned`, not `implemented`.
+
+## Stay in this province
+
+This repository is the admission loop: plan checks, verdicts, and the assembly gate. It is a peer. Seed is the floor. Capillary, myosotis, and drosera are the other peers. Bloom is the only composer. Trellis is outside the call path. This task does not edit them. An invalid plan stays held. A revise verdict keeps its reasons. The loop does not ratify for the owner.
+
+Do not add a model, a retrieval corpus, or a memory store here.
+
+## Where the other six live
+
+| The work | Repository |
+| --- | --- |
+| Run records, tool identity, provider shape | `seed` |
+| Bounded retrieval and relations | `capillary` |
+| Consent, forget, and recall | `myosotis` |
+| Plans, verdicts, and the assembly gate | `aestivation` (here) |
+| Tool faces, skills, hooks, cookbooks | `drosera` |
+| Probes over those libraries | `trellis` |
+| The team workspace a person opens | `bloom` |
+
+## Skills
+
+This file is the working method. A skill adds instructions and does not open the gate. Do not add a second skill system here.
+
+## Agents
+
+One working method lives here. Reviewer judgment is a verdict record, not a new agent file. Do not edit a sibling from this checkout.
+
+## References
+
+Read in this order: this file, `docs/charter.md`, `docs/architecture.md`, `docs/contracts/`, `docs/interop.md`, then `src/`. Code and `npm test` win over a stale sentence.
+
+## Cookbook
+
+1. Read this file and the charter.
+2. Run `npm test`.
+3. Change a rule only together with the test that holds it.
+4. Stop at the province boundary in the table above.
+
+This recipe is instructions. It is not a plan and not an executable cookbook.
+
+## MCP
+
+This repository is not an MCP server. Do not commit an MCP configuration, a server address, or a credential. Evidence a reviewer cites is retrieved elsewhere. This loop only records the judgment and the gate.
