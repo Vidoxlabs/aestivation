@@ -93,7 +93,7 @@ No new tool IDs are introduced by `CAP-07`.
 ## Open owner decisions
 
 - **D14 (pending owner decision)**: Under the review sequencing convention, `CAP-06.1` (`seed` owner-gate record binding to `planDigest`) lands at `M3` with `CAP-07.3` folded into `CAP-06.1` (`CAP-07.4` preserved without renumbering), and `CAP-07` depends on `CAP-06.1` at `M3` ahead of `CAP-06.2` through `CAP-06.4` at `M4`.
-- Per-run revision cap default and owner plan-gate threshold (pending owner decision, `D12` area): confirm the default per-run revision cap and whether owner plan approval gates every multi-step plan or only plans exceeding declared effect thresholds.
+- Per-run revision cap default and owner plan-gate threshold (pending owner decision, not yet numbered): confirm the default per-run revision cap and whether owner plan approval gates every multi-step plan or only plans exceeding declared effect thresholds.
 
 ## Evidence
 
@@ -102,4 +102,5 @@ No new tool IDs are introduced by `CAP-07`.
 ## Changes
 
 - `2026-11-23`: Initial Phase 0 specification (`CAP-01`).
-- `2026-11-23`: Folded CAP-07.3 into CAP-06.1 and updated dependency to CAP-06.1 (D14).
+- `2026-11-23`: Folded `CAP-07.3` into `CAP-06.1` and updated dependency to `CAP-06.1` (`D14`).
+- `2026-11-23`: Removed `D12` attribution from the unnumbered revision-cap and owner plan-gate threshold open question and formatted capability IDs in Changes (`CAP-01.5`).
