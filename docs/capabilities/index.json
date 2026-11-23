@@ -12,13 +12,16 @@
         {
           "id": "CAP-01.5",
           "title": "Aestivation capability docs and plan loop spec",
+          "milestone": "M0",
           "status": "in-progress"
         }
       ],
       "toolIds": [],
       "contracts": [],
       "tests": [],
-      "prs": [],
+      "prs": [
+        "aestivation#1"
+      ],
       "commits": [],
       "adr": [],
       "decision": null,
@@ -34,6 +37,7 @@
         {
           "id": "CAP-02.5",
           "title": "Self-test test/capabilities.test.mjs in aestivation",
+          "milestone": "M2",
           "status": "proposed"
         }
       ],
@@ -56,11 +60,19 @@
         {
           "id": "CAP-07.1",
           "title": "Plan payload extensions, clarifying question hold, and step status machine",
+          "milestone": "M3",
           "status": "proposed"
         },
         {
           "id": "CAP-07.2",
           "title": "Revision cap and separation of review verdict from owner approval",
+          "milestone": "M3",
+          "status": "proposed"
+        },
+        {
+          "id": "CAP-07.4",
+          "title": "Plan review loop wiring and plan events",
+          "milestone": "M3",
           "status": "proposed"
         }
       ],
@@ -87,6 +99,7 @@
         {
           "id": "CAP-15.2",
           "title": "Typed research plan steps and step/revision caps",
+          "milestone": "M8",
           "status": "proposed"
         }
       ],

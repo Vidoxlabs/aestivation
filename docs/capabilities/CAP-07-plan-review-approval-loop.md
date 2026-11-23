@@ -9,7 +9,7 @@
 - CLI phase: `P3`
 - Status: `proposed`
 - Claim: `planned`
-- Depends on: `CAP-06`
+- Depends on: `CAP-06.1`
 
 ## Why
 
@@ -32,7 +32,7 @@ Multi-step workspace runs need an explicit, deterministic plan-review and owner-
 | `cancelled` | (none, terminal) | Cancelled step |
 
 - **Review verdicts and assembly gate**: review verdicts remain `aestivation`'s responsibility (`approve`, or `revise` with mandatory reasons). `assemblyGate` stays closed on `plan-invalid`, `ledger-unsound` (any malformed verdict record or dangling plan reference), `awaiting-verdict`, `review-stale` (digest mismatch), and `revisions-requested`.
-- **Owner plan approval separated from review (`CAP-07.2`, `CAP-07.3`)**: owner approval is a separate act. The owner accepts, edits, or rejects the plan; the decision is recorded as a `seed` owner-gate record (`CAP-06`) bound to the plan's canonical SHA-256 `planDigest`. `aestivation` never ratifies on the owner's behalf, and memory records, model beliefs, or reviewer `approve` verdicts never count as owner approval. Editing the plan produces a new `planDigest` and invalidates prior verdicts or owner approvals.
+- **Owner plan approval separated from review (`CAP-07.2`, `CAP-06.1`)**: owner approval is a separate act. The owner accepts, edits, or rejects the plan; the decision is recorded as a `seed` owner-gate record (`CAP-06.1` at `M3`) bound to the plan's canonical SHA-256 `planDigest`. `aestivation` never ratifies on the owner's behalf, and memory records, model beliefs, or reviewer `approve` verdicts never count as owner approval. Editing the plan produces a new `planDigest` and invalidates prior verdicts or owner approvals.
 - **Per-run revision cap (`CAP-07.2`)**: each run enforces an explicit per-run revision cap. Reaching the cap stops further revision rounds and holds the plan with a stated reason instead of looping without bound.
 
 ## Contract touchpoints
@@ -40,7 +40,7 @@ Multi-step workspace runs need an explicit, deterministic plan-review and owner-
 - `aestivation/docs/contracts/plan.md`: plan payload fields (`request`, `seats`, `knownFacts`, `steps` with seat role ID and `action`, `summary`, optional `clarifyingQuestion`), step status machine, and per-run revision cap (`CAP-07.1`, `CAP-07.2`).
 - `aestivation/docs/contracts/verdict.md`: `approve` and `revise` verdict records with mandatory reasons on `revise` and append-only ledger soundness checks.
 - `aestivation/docs/contracts/gate.md`: `assemblyGate` precedence (`plan-invalid`, `ledger-unsound`, `awaiting-verdict`, `review-stale`, `revisions-requested`) and non-ratification guarantee.
-- `seed/docs/contracts/run-model.md`: owner-gate decision record bound to `planDigest` (`CAP-06`, `CAP-07.3`).
+- `seed/docs/contracts/run-model.md`: `seed` owner-gate decision record binding to `planDigest` (`CAP-06.1` at `M3`).
 - `bloom/docs/architecture.md`: loop wiring and emission of `plan.*` events (`CAP-07.4`).
 
 ## Tool IDs and events
@@ -67,16 +67,15 @@ No new tool IDs are introduced by `CAP-07`.
 - `step-status-illegal-moves-refused`: every illegal move not listed in the transition table (across all 8 x 8 pairs plus unknown statuses, including `planned` to `running`, `planned` to `approved`, and any exit from terminal states `rejected`, `done`, `failed`, `cancelled`) is explicitly tested and refused.
 - `clarifying-question-holds-plan`: a plan containing `clarifyingQuestion` holds execution until the owner answers.
 - `unsound-ledger-closes-assembly-gate`: a malformed verdict or unknown plan reference causes `assemblyGate` to hold with `ledger-unsound` and `verdict: null`.
-- `review-verdict-and-memory-never-ratify`: a reviewer `approve` verdict, model belief, or memory entry never counts as owner approval; execution remains blocked until a `seed` owner-gate record bound to `planDigest` records owner acceptance or edit.
+- `review-verdict-and-memory-never-ratify`: a reviewer `approve` verdict, model belief, or memory entry never counts as owner approval; execution remains blocked until a `seed` owner-gate record (`CAP-06.1`) bound to `planDigest` records owner acceptance or edit.
 - `owner-edit-updates-plan-digest`: an owner edit yields a new `planDigest`, invalidating any earlier verdict or decision for the superseded digest.
 - `revision-cap-holds-with-stated-reason`: reaching the per-run revision cap refuses further revision attempts and holds the plan with a stated reason.
 
 ## Slices
 
-- `CAP-07.1` (`aestivation`, `proposed`): Plan payload extensions, clarifying question hold, and step status machine.
-- `CAP-07.2` (`aestivation`, `proposed`): Revision cap and separation of review verdict from owner approval.
-- `CAP-07.3` (`seed`, `proposed`): Owner-gate record binding to plan digest.
-- `CAP-07.4` (`bloom`, `proposed`): Plan review loop wiring and plan events (`plan.proposed`, `plan.verdict`, `plan.gate`, `plan.decision`).
+- `CAP-07.1` (`aestivation`, `M3`, `proposed`): Plan payload extensions, clarifying question hold, and step status machine.
+- `CAP-07.2` (`aestivation`, `M3`, `proposed`): Revision cap and separation of review verdict from owner approval.
+- `CAP-07.4` (`bloom`, `M3`, `proposed`): Plan review loop wiring and plan events (`plan.proposed`, `plan.verdict`, `plan.gate`, `plan.decision`).
 
 ## Non-goals
 
@@ -93,7 +92,7 @@ No new tool IDs are introduced by `CAP-07`.
 
 ## Open owner decisions
 
-- `M3` / `M4` sequencing guidance (pending owner decision): `CAP-07` (`M3`, `P3`) depends on `CAP-06` (`M4`, `P4`) for the owner-gate decision record schema (`CAP-07.3`). How `M3` and `M4` are sequenced (such as landing the `CAP-06` record shape ahead of `M4` UI work) is pending owner guidance.
+- **D14 (pending owner decision)**: Under the review sequencing convention, `CAP-06.1` (`seed` owner-gate record binding to `planDigest`) lands at `M3` with `CAP-07.3` folded into `CAP-06.1` (`CAP-07.4` preserved without renumbering), and `CAP-07` depends on `CAP-06.1` at `M3` ahead of `CAP-06.2` through `CAP-06.4` at `M4`.
 - Per-run revision cap default and owner plan-gate threshold (pending owner decision, `D12` area): confirm the default per-run revision cap and whether owner plan approval gates every multi-step plan or only plans exceeding declared effect thresholds.
 
 ## Evidence
@@ -103,3 +102,4 @@ No new tool IDs are introduced by `CAP-07`.
 ## Changes
 
 - `2026-11-23`: Initial Phase 0 specification (`CAP-01`).
+- `2026-11-23`: Folded CAP-07.3 into CAP-06.1 and updated dependency to CAP-06.1 (D14).
