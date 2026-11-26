@@ -9,7 +9,7 @@ Plans, verdicts, and the assembly gate
 
 Plan proposal, deterministic validation, review verdicts, and the assembly gate.
 
-Aestivation is the admission and review member of the bloom agent family. Before work opens, it happens here: a plan is proposed, a deterministic rule pack validates it, reviewers record approve or revise verdicts, and a gate holds automatic assembly until the plan is both valid and approved. A revision verdict stops assembly; the reasons say what to change; the next plan is a new proposal.
+Aestivation is the admission and review system of Vivarium, the personal agent platform. Before work opens, it happens here: a plan is proposed, a deterministic rule pack validates it, reviewers record approve or revise verdicts, and a gate holds automatic assembly until the plan is both valid and approved. A revision verdict stops assembly; the reasons say what to change; the next plan is a new proposal.
 
 ## Status
 
@@ -51,7 +51,7 @@ The same plan validates the same way every time, and no review can wave it throu
 
 ## The family
 
-The family follows one design law: ordinary botanical words for public products, mirroring five flower-named personas.
+Vivarium is the product. Its systems follow one naming law: ordinary botanical words that say what each system does.
 
 | Name | Province |
 | :--- | :--- |
@@ -61,7 +61,8 @@ The family follows one design law: ordinary botanical words for public products,
 | `aestivation` (this repo) | Plans, verdicts, and the gate before assembly |
 | [`drosera`](https://github.com/Vidoxlabs/drosera) | Tool faces, skills, hooks, cookbooks |
 | [`trellis`](https://github.com/Vidoxlabs/trellis) | Multi-point testing with dated evidence |
-| [`bloom`](https://github.com/Vidoxlabs/bloom) | The team workspace harness |
+| [`bloom`](https://github.com/Vidoxlabs/bloom) | Vivarium's user interface: the app a person opens |
+| [`vivarium`](https://github.com/Vidoxlabs/vivarium) | The product's umbrella: pins the seven systems at exact commits |
 | [`docs`](https://github.com/Vidoxlabs/docs) | Family documentation, synced from every public repository |
 
 ## Documentation
